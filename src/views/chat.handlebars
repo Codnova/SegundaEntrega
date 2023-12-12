@@ -1,0 +1,20 @@
+<div class="min-h-screen flex flex-col items-center justify-center bg-gray-100">
+  <div class="w-full max-w-md p-4 bg-white rounded-lg border border-gray-200 shadow-md sm:p-6 lg:p-8">
+    <h2 class="mb-4 text-2xl font-bold text-center text-gray-700">Chat Room</h2>
+    <div id="messages" class="mb-4 h-64 overflow-y-auto bg-gray-50 p-4 rounded-lg border border-gray-200">
+      <!-- Messages will be appended here -->
+    </div>
+    <div class="flex items-center">
+      <input type="text" id="message" class="flex-1 p-2 rounded-md border border-gray-300 focus:outline-none focus:ring focus:border-blue-300" placeholder="Type your message...">
+      <button class="ml-2 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none" id="sendButton">Send</button>
+    </div>
+  </div>
+  <div class="mt-4">
+      <a href="/" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 ml-2 rounded">Homepage</a>
+      <a href="/realTimeProducts" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Real Time Products</a>
+    </div>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="/js/chat.js"></script>
