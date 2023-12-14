@@ -32,4 +32,14 @@
       <a href="/realTimeProducts" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Real Time Products</a>
       <a href="/chatApp" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 ml-2 rounded">Chat App</a>
     </div>
+    <div class="mt-4">
+      <a href="/?limit={{limit}}&page=1" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">First Page</a>
+      {{#if hasPrevPage}}
+        <a href="/?limit={{limit}}&page={{prevPage}}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Prev Page</a>
+      {{/if}}
+      {{#if hasNextPage}}
+        <a href="/?limit={{limit}}&page={{nextPage}}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Next Page</a>
+      {{/if}}
+      <a href="/?limit={{limit}}&page={{totalPages}}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 ml-2 rounded">Last Page</a>
+    </div>
   </div>

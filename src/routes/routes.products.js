@@ -13,13 +13,21 @@ export const router = Router();
 
 router.get("/", async (req, res) => { // Get the complete list of products
   res.setHeader("Content-Type", "application/json"); // Set the header
-  let products = await productManager.getProducts();
-  let limit = parseInt(req.query.limit); // Get the limit query for products
-  if (!limit) {
-    res.status(200).json({ products });
+  let {limit=10, page=1, sort, query} = req.query // Get the queries, if they are not provided, set some default values
+  limit = parseInt(limit); // Get the limit query for products
+  page = parseInt(page)
+  let products = await productManager.getProducts(limit, page, sort, query); // Fetches the paginate data of all products
+  let {totalPages, hasNextPage, hasPrevPage, prevPage, nextPage} = products // Destructure the data from paginate 
+  if (!products) {
+    res.status(400).json({ error: 'The products could not be fetched from the DB'});
   } else {
-    data = products.slice(0, limit); // Modify the array to limit the results
-    res.status(200).json({ products });
+    res.status(200).json( 
+      {
+        status:'sucess',
+        payload: products.docs,
+        totalPages, hasNextPage, hasPrevPage, prevPage, nextPage
+      }
+     );
   }
 });
 
@@ -45,7 +53,7 @@ router.delete("/:id", async (req, res) => { // Delete a product by its ID
   }
   let result = await productManager.deleteProduct(id);
   let updatedProducts = await productManager.getProducts();
-  io.emit('newProduct', updatedProducts);
+  io.emit('newProduct', updatedProducts.docs);
   if (!result) {
     res.status(400).json({error: "The product couldn't be found"});
   } else {
@@ -60,9 +68,9 @@ router.put("/:id", async (req, res) => { // Update a product by its ID
   if (!id) {
     return res.status(400).json({error: "The ID you entered is not a valid number"});
   }
-  let result = await productManager.updateProduct(id, product);
-  let updatedProducts = await productManager.getProducts();
-  io.emit('newProduct', updatedProducts);
+  let result = await productManager.updateProduct(id, product); // Update the product
+  let updatedProducts = await productManager.getProducts(); // Get the list of products again to display it via websockets
+  io.emit('newProduct', updatedProducts.docs);
   if (!result) {
     res.status(404).json({error: "The product couldn't be found"});
   } else {
@@ -80,7 +88,7 @@ router.post('/', async (req, res)=> {
   try {
     await productManager.addProduct(product) // Send the product and destructure it in the target function
     let updatedProducts = await productManager.getProducts();
-    io.emit('newProduct', updatedProducts);
+    io.emit('newProduct', updatedProducts.docs);
     res.status(200).json({ status: 'success', message:'Product added successfully' });
   } catch (error) {
     res.status(400).json({status:'error', message: error.message});

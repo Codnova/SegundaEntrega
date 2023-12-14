@@ -13,7 +13,11 @@ export const router = Router();
 router.get("/", async (req, res) => { // Get the complete list of carts
   res.setHeader("Content-Type", "application/json"); // Set the header
   let carts = await cartManager.getCarts();
-  res.status(200).json({ carts });
+  if (!carts) {
+    res.status(400).json({error: 'Could not fetch carts'});
+  } else {
+    res.status(200).json({ carts });
+  }
 });
 
 router.get("/:cid", async (req, res) => { // Get a cart by its ID
@@ -35,7 +39,7 @@ router.post("/:cid/product/:pid", async (req, res) => { // Adds a product to a c
   if (productId != product.productId){
     return res.status(400).json({error: "The product Id in the URL must match the productId in the req.body"});
   }
-  if (!cartId ||!productId) {
+  if (!cartId || !productId) {
     return res.status(400).json({error: "The cart or product ID you entered is not a valid number"});
   }
   let result = await cartManager.addProductToCart(cartId, product)

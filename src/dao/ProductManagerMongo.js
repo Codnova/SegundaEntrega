@@ -2,9 +2,22 @@ import {productsModel} from './models/products.model.js';
 
 export default class ProductManagerMongo {
 
-  async getProducts() { // Retrieves the products in the database
+  async getProducts(limit=10, page=1, sort, query) { // Retrieves the products in the database
     try {
-      return await productsModel.find({}).lean();
+      let data = await productsModel.paginate({},{lean:true, limit:limit, page:page, sort:sort, query:query}) //productsModel.find({}).lean();
+      return data
+    } catch (error) {
+      if (error) {
+        console.log(error); // There aren't any products or there was an error
+        return null;
+      }
+    }
+  }
+
+  async getProductsPaginate() { // Returns the products paginate data
+    try {
+      let data = await productsModel.paginate({},{lean:true}) //productsModel.find({}).lean();
+      return data
     } catch (error) {
       if (error) {
         console.log(error); // There aren't any products or there was an error

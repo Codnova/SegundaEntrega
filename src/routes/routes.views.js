@@ -15,9 +15,15 @@ const productManager = new ProductManagerMongo()
 router.get('/', async (req,res) => {
 
   try {
-    let data = await productManager.getProducts(); // Retrieves the products from the DB
-    console.log("data que viene de DB: ", data)
-    res.status(200).render('home' , {data})
+    let {limit=10, page=1, sort, query} = req.query;
+    console.log('Queries received in view router', limit, page, sort, query)
+    let products = await productManager.getProducts( limit, page /* limit, page, sort, query */); // Fetches the paginate data of all products
+    let {totalPages, hasNextPage, hasPrevPage, prevPage, nextPage} = products
+    console.log('Pagination values from DB: ', totalPages, hasNextPage, hasPrevPage, prevPage, nextPage); 
+    res.status(200).render('home' , {
+      data: products.docs,
+      totalPages, hasNextPage, hasPrevPage, prevPage, nextPage, limit, page, sort, query
+    })
 
   } catch (error) {
         res.setHeader('Content-Type','application/json');
@@ -30,7 +36,7 @@ router.get('/realtimeproducts', async (req,res) => {
 
   try {  
     let data = await productManager.getProducts(); // Retrieves the products from the DB
-    res.status(200).render('realTimeProducts' , {data})
+    res.status(200).render('realTimeProducts' , {data: data.docs})
 
   } catch (error) {
         res.setHeader('Content-Type','application/json');
