@@ -25,7 +25,12 @@ export const io = new Server (server);
 
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
-app.engine('handlebars', engine());
+app.engine('handlebars', engine({
+  runtimeOptions: {
+    allowProtoPropertiesByDefault: true,
+    allowProtoMethodsByDefault: true,
+  }
+}));
 app.set('view engine', 'handlebars');
 app.set('views', viewFolder);
 app.use(express.static(publicFolder));

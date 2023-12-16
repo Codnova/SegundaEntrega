@@ -5,7 +5,7 @@ const productManager = new ProductManagerMongo;
 
 export default class CartManagerMongo {
 
-  async getCarts(){
+  async getCarts(){ // Gets a full list of carts in the DB
 
     try {
       return await cartsModel.find({deleted:false}).populate('products.productId');
@@ -19,7 +19,7 @@ export default class CartManagerMongo {
 
   async getCartById(id) { // Checks if a cart exists and returns the cart
     try {
-      let cart = await cartsModel.findOne({_id:id}).populate('products.productId');
+      let cart = await cartsModel.findOne({_id:id},{lean:true}).populate('products.productId');
       if (!cart) {
         console.log('Cart with ID not found: ', id);
       }
@@ -125,6 +125,106 @@ export default class CartManagerMongo {
     } catch (error) {
       console.log(error.message);
       throw new Error("Error updating the cart");
+    }
+  }
+
+  async deleteProductFromCart (cartId, productId) { // Deletes a single product from a cart
+
+    try {
+      let cartFound = await cartsModel.findOne({_id:cartId, deleted:false}); // Fetch the cart we are looking for
+      if (!cartFound) {
+        console.log("Cart not found");
+        return false;
+      }
+      const productsIndex = cartFound.products.findIndex(product => product.productId.equals(productId)) // Finds and retrieves the index of the product we are going to delete (if it exists)
+      if (productsIndex === -1){
+        console.log('The product does not exists in the cart you specified')
+        return false
+      } else {
+        let deleteResult = await cartsModel.updateOne(
+            {_id: cartId},
+            {$pull: {products: {productId: productId}}}
+          );
+        return deleteResult
+      }
+    } catch (error) {
+      console.log(error.message);
+      throw new Error("Error deleting the product");
+    }
+
+  }
+
+  async emptyCart (cartId) { // Deletes all the products from a cart
+    try {
+      let cartFound = await cartsModel.findOne({_id:cartId, deleted:false}); // Fetch the cart we are looking for
+      if (!cartFound) {
+        console.log("Cart not found");
+        return false;
+      }
+      let emptyCart = await cartsModel.updateOne(
+        {_id: cartId},
+        { $set: { products: [] } }
+      );
+      return emptyCart
+    } catch (error) {
+      console.log(error.message);
+      throw new Error("Error emptying the cart");
+    }
+  }
+
+  async updateCart (cartId, {products}) { // Updates a cart with the products sent via body
+    try {
+      let cartFound = await cartsModel.findOne({_id:cartId, deleted:false}); // Fetch the cart we are looking for
+      if (!cartFound) {
+        console.log("Cart not found");
+        return false;
+      }
+      for (let element of products) { // Checks that every product in the array is valid 
+        if (!element.productId || !element.quantity) {
+          console.log('Missing product ID or quantity');
+          return false
+        } else {
+          if(!await productManager.checkProductById(element.productId)){ // Checks that every product exists in the list of products before it can be added to the cart
+            console.log(`The product with ID ${element.productId} doesn't exist so it cannot be added to the cart`)
+            return false
+          }
+          let updatedCart = await cartsModel.updateOne(
+            {_id: cartId},
+            { $set: { products: products } }
+          );
+          return updatedCart
+        }
+      }  
+    } catch (error) {
+      console.log(error.message);
+      throw new Error("Error updating the cart");
+    }
+  }
+
+  async updateProductQuantityCart (cartId, productId, quantity) {
+    try {
+      let cartFound = await cartsModel.findOne({_id:cartId, deleted:false}); // Fetch the cart we are looking for
+      if (!cartFound) {
+        console.log("Cart not found");
+        return false;
+      }
+      const productsIndex = cartFound.products.findIndex(product => product.productId.equals(productId)) // Finds and retrieves the index of the product we are going to update (if it exists)
+        if (productsIndex === -1){
+          console.log('The product does not exists in the cart, so it cannot be updated');
+          return false;
+        } else {
+          let update = { $set: { [`products.${productsIndex}.quantity`]: quantity } };
+          let result = await cartsModel.findByIdAndUpdate(
+            cartId,
+            update,
+            {new:true}
+          )
+          console.log(result);
+          return result;
+        }      
+    } catch (error) {
+      console.log(error.message);
+      throw new Error("Error updating the quantity of the product in cart");
     }
   }
 

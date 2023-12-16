@@ -11,18 +11,20 @@
           <th class="px-4 py-2">Code</th>
           <th class="px-4 py-2">Stock</th>
           <th class="px-4 py-2">Status</th>
+          <th class="px-4 py-2">Add to Cart</th>
         </tr>
       </thead>
       <tbody>
         {{#each data}}
           <tr class="bg-white border-b">
-            <td class="px-4 py-2">{{this.id}}</td>
+            <td class="px-4 py-2">{{this._id}}</td>
             <td class="px-4 py-2">{{this.title}}</td>
             <td class="px-4 py-2">{{this.description}}</td>
             <td class="px-4 py-2">${{this.price}}</td>
             <td class="px-4 py-2">{{this.code}}</td>
             <td class="px-4 py-2">{{this.stock}}</td>
             <td class="px-4 py-2">{{this.status}}</td>
+            <th class="px-4 py-2"> <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded add-to-cart" data-product-id="{{this._id}}">Add to Cart</button></th>
           </tr>
         {{/each}}
       </tbody>
@@ -40,8 +42,11 @@
     </div>
     {{!-- Links to other pages --}}
     <div class="flex flex-wrap mt-4 justify-center space-x-2">
+      <a href="/carts/6577ad616076d24fea73553e" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Carts</a>
       <a href="/realTimeProducts" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Real Time Products</a>
       <a href="/chatApp" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Chat App</a>
       <a href="/" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Homepage</a>
     </div>
 </div>
+
+<script src="/js/products.js"></script>

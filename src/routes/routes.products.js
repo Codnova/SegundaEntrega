@@ -13,16 +13,20 @@ export const router = Router();
 
 router.get("/", async (req, res) => { // Get the complete list of products
   res.setHeader("Content-Type", "application/json"); // Set the header
-  let {limit=10, page=1, query={}, sort={}} = req.query // Get the queries, if they are not provided, set some default values
+  let {limit=10, page=1, category, sort={}} = req.query // Get the queries, if they are not provided, set some default values
   let sortOption = {}; // Set the sorting, it can be ascending or descending
+  let query = {};
+  if(category) {
+    query.description = { $regex: category, $options: 'i' }; // Regular expression so that it can accept upper and lowecase text
+  }
   if (sort === "asc") {
     sortOption = {price: 1};
   } else if (sort === "desc") {
     sortOption = {price: -1};
   } else {
-    console.log("The sort option can only be asc or desc");
+    console.log("The sort option can be asc or desc");
   }
-  console.log(`Queries received in products router LIMIT: ${limit}, PAGE: ${page}, QUERY: ${query}, SORT: ${sort}`);
+  console.log(`Queries received in products router LIMIT: ${limit}, PAGE: ${page}, QUERY: ${category}, SORT: ${sort}`);
   limit = parseInt(limit); // Get the limit query for products
   page = parseInt(page)
   let products = await productManager.getProducts(limit, page, query, sortOption); // Fetches the paginate data of all products

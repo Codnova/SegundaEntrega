@@ -1,0 +1,41 @@
+<div class="container mx-auto p-4">
+    <h1 class="text-3xl font-bold text-blue-600 mb-4">Cart Page</h1>
+    <h1 class="text-3xl font-bold text-blue-600 mb-4">Products in Cart {{cartId}}</h1>
+    <table class="min-w-full table-auto shadow-md rounded-lg overflow-hidden">
+      <thead class="bg-blue-500 text-white">
+        <tr>
+          <th class="px-4 py-2">Product ID</th>
+          <th class="px-4 py-2">Title</th>
+          <th class="px-4 py-2">Description</th>
+          <th class="px-4 py-2">Price</th>
+          <th class="px-4 py-2">Code</th>
+          <th class="px-4 py-2">Stock</th>
+          <th class="px-4 py-2">Status</th>
+          <th class="px-4 py-2">Remove from Cart</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each products }} {{log this}}
+          <tr class="bg-white border-b">
+            <td class="px-4 py-2">{{this.productId._id}}</td>
+            <td class="px-4 py-2">{{this.productId.title}}</td>
+            <td class="px-4 py-2">{{this.productId.description}}</td>
+            <td class="px-4 py-2">${{this.productId.price}}</td>
+            <td class="px-4 py-2">{{this.productId.code}}</td>
+            <td class="px-4 py-2">{{this.productId.stock}}</td>
+            <td class="px-4 py-2">{{this.productId.status}}</td>
+            <th class="px-4 py-2"> <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded remove-from-cart" data-product-id="{{this.productId._id}}">Remove from Cart</button></th>
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+    {{!-- Links to other pages --}}
+    <div class="flex flex-wrap mt-4 justify-center space-x-2">
+      <a href="/products" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Products</a>
+      <a href="/realTimeProducts" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Real Time Products</a>
+      <a href="/chatApp" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Chat App</a>
+      <a href="/" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Homepage</a>
+    </div>
+</div>
+
+<script src="/js/products.js"></script>

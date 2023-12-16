@@ -3,11 +3,13 @@
 import { Router } from 'express';
 import __dirname from '../utils.js'; //Importamos utils para poder trabvajar con rutas absolutas
 import ProductManagerMongo from '../dao/ProductManagerMongo.js';
+import CartManagerMongo from '../dao/CartManagerMongo.js';
 
 // Definitions
 
 export const router = Router();
-const productManager = new ProductManagerMongo()
+const productManager = new ProductManagerMongo();
+const cartManager = new CartManagerMongo();
 
 // Methods
 
@@ -60,6 +62,29 @@ router.get('/chatapp', async (req,res) => {
 
   try {  
     res.status(200).render('chat') // Renders the chat app
+
+  } catch (error) {
+        res.setHeader('Content-Type','application/json');
+        return res.status(400).json({error:`error`});
+  }
+})
+
+router.get('/carts/:cid', async (req,res) => {
+  let cartId = req.params.cid;
+  try {
+    let data = await cartManager.getCartById(cartId);
+    if (!data) {
+      return res.status(404).render('error', { message: "Cart not found" });
+    }
+    data.products.forEach(product => {
+      console.log(product.productId);
+    });
+
+    //console.log(data)
+    res.status(200).render('carts', {
+      products: data.products,
+      cartId: cartId
+    }) // Renders the carts view
 
   } catch (error) {
         res.setHeader('Content-Type','application/json');
