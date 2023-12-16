@@ -3,9 +3,9 @@ import mongoose from "mongoose";
 const cartsCollection = 'carts'
 const cartsSchema = new mongoose.Schema(
   {
-    cartId: {
+    cartId: { // Do not use this ID, use MongoDB _id
       type: Number,
-      unique: true // Ensures that each cart has a unique ID
+      unique: true
     },
     products: [{
       productId: {

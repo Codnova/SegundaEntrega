@@ -15,12 +15,24 @@ const productManager = new ProductManagerMongo()
 router.get('/', async (req,res) => {
 
   try {
+    res.status(200).render('home')
+
+  } catch (error) {
+        res.setHeader('Content-Type','application/json');
+        console.log(error.message)
+        return res.status(400).json({error:`error`});
+  }
+})
+
+router.get('/products', async (req,res) => {
+
+  try {
     let {limit=10, page=1, sort, query} = req.query;
-    console.log('Queries received in view router', limit, page, sort, query)
-    let products = await productManager.getProducts( limit, page /* limit, page, sort, query */); // Fetches the paginate data of all products
+    console.log(`Queries received in view router LIMIT: ${limit}, PAGE: ${page}, QUERY: ${query}, SORT: ${sort}`);
+    let products = await productManager.getProducts( limit, page, query, sort); // Fetches the paginate data of all products
     let {totalPages, hasNextPage, hasPrevPage, prevPage, nextPage} = products
     console.log('Pagination values from DB: ', totalPages, hasNextPage, hasPrevPage, prevPage, nextPage); 
-    res.status(200).render('home' , {
+    res.status(200).render('products' , {
       data: products.docs,
       totalPages, hasNextPage, hasPrevPage, prevPage, nextPage, limit, page, sort, query
     })

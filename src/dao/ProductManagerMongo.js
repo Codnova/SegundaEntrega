@@ -2,9 +2,10 @@ import {productsModel} from './models/products.model.js';
 
 export default class ProductManagerMongo {
 
-  async getProducts(limit=10, page=1, sort, query) { // Retrieves the products in the database
+  async getProducts(limit=10, page=1, query={}, sort={}) { // Retrieves the products in the database
     try {
-      let data = await productsModel.paginate({},{lean:true, limit:limit, page:page, sort:sort, query:query}) //productsModel.find({}).lean();
+      //console.log(`Queries received in PRODUCT MANAGER: LIMIT: ${limit}, PAGE: ${page}, QUERY: ${query}, SORT: ${sort}`);
+      let data = await productsModel.paginate(query ,{lean:true, limit:limit, page:page, sort: sort}) //productsModel.find({}).lean();
       return data
     } catch (error) {
       if (error) {
@@ -25,6 +26,27 @@ export default class ProductManagerMongo {
       }
     }
   }
+
+  async getProductsSort(sortPrice) {
+    try {
+      let sort = 0;
+      if (sortPrice === 'asc'){
+        sort = 1;
+      } else if (sortPrice === 'desc') {
+        sort =-1;
+      } else {
+        console.log('The sort can only be asc or desc')
+      }
+      let data = await productsModel.find({}).sort({price:sort})
+      console.log(data)
+      return data
+    } catch (error) {
+      if (error) {
+        console.log(error); // There aren't any products or there was an error
+        return null;
+      }
+    }
+  } 
 
   async addProduct({ title, description, price, thumbnail, code, stock, status=true, deleted=false}) { // Adds a product to the database
     try {

@@ -13,11 +13,28 @@ export const router = Router();
 
 router.get("/", async (req, res) => { // Get the complete list of products
   res.setHeader("Content-Type", "application/json"); // Set the header
-  let {limit=10, page=1, sort, query} = req.query // Get the queries, if they are not provided, set some default values
+  let {limit=10, page=1, query={}, sort={}} = req.query // Get the queries, if they are not provided, set some default values
+  let sortOption = {}; // Set the sorting, it can be ascending or descending
+  if (sort === "asc") {
+    sortOption = {price: 1};
+  } else if (sort === "desc") {
+    sortOption = {price: -1};
+  } else {
+    console.log("The sort option can only be asc or desc");
+  }
+  console.log(`Queries received in products router LIMIT: ${limit}, PAGE: ${page}, QUERY: ${query}, SORT: ${sort}`);
   limit = parseInt(limit); // Get the limit query for products
   page = parseInt(page)
-  let products = await productManager.getProducts(limit, page, sort, query); // Fetches the paginate data of all products
+  let products = await productManager.getProducts(limit, page, query, sortOption); // Fetches the paginate data of all products
+  //let products = await productManager.getProductsSort(sort)
   let {totalPages, hasNextPage, hasPrevPage, prevPage, nextPage} = products // Destructure the data from paginate 
+  let prevLink = '', nextLink = '';
+  if (hasPrevPage) {
+    prevLink = `localhost:3000/api/products?limit=${limit}&page=${prevPage}`
+  } else { prevLink = null}
+  if (hasNextPage) {
+    nextLink = `localhost:3000/api/products?limit=${limit}&page=${nextPage}`
+  } else { nextLink = null}
   if (!products) {
     res.status(400).json({ error: 'The products could not be fetched from the DB'});
   } else {
@@ -25,7 +42,7 @@ router.get("/", async (req, res) => { // Get the complete list of products
       {
         status:'sucess',
         payload: products.docs,
-        totalPages, hasNextPage, hasPrevPage, prevPage, nextPage
+        totalPages, hasNextPage, hasPrevPage, prevPage, nextPage, prevLink, nextLink
       }
      );
   }

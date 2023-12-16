@@ -35,7 +35,7 @@ app.use('/api/carts', cartRouter)
 
 async function connectDB() {
   try {
-    await mongoose.connect('mongodb+srv://codiox:<INSERTECLAVE>@ecommerce.76nmmgq.mongodb.net/?retryWrites=true&w=majority', {dbName:'ecommerce'})
+    await mongoose.connect('mongodb+srv://codiox:INSERTECLAVE@ecommerce.76nmmgq.mongodb.net/?retryWrites=true&w=majority', {dbName:'ecommerce'})
     console.log('DB Online');
   } catch (error) {
     console.log(error)
